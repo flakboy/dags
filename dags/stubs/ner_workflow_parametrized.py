@@ -54,7 +54,7 @@ def validate_params(**context):
 with DAG(
     "ner_workflow_parametrized",
     default_args=default_args,
-    schedule_interval=None,
+    schedule=None,
     render_template_as_native_obj=True,  # REQUIRED TO RENDER TEMPLATE TO NATIVE LIST INSTEAD OF STRING!!!
     params={
         "files": Param(

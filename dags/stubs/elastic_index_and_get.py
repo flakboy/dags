@@ -28,7 +28,7 @@ ES_CONN_ARGS = {
 with DAG(
     "elastic_index_and_get",
     default_args=default_args,
-    schedule_interval=None,
+    schedule=None,
     render_template_as_native_obj=True,
 ) as dag:
     elastic_push = ElasticJsonPushOperator(

@@ -21,7 +21,7 @@ def eval_my():
 with DAG(
     "branch_python",
     default_args=default_args,
-    schedule_interval=None,
+    schedule=None,
 ) as dag:
     dummy_start = DummyOperator(task_id="dummy_start")
     branch = BranchPythonOperator(task_id="branch", python_callable=eval_my)

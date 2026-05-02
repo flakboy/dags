@@ -36,7 +36,7 @@ def remove_temp_files(context, result):
 with DAG(
     "image_process",
     default_args=default_args,
-    schedule_interval=None,
+    schedule=None,
     # REQUIRED TO RENDER TEMPLATE TO NATIVE LIST INSTEAD OF STRING!!!
     render_template_as_native_obj=True,
     params={

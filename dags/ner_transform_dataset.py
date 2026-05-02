@@ -88,7 +88,7 @@ def remove_temp_files(context, result):
 with DAG(
     "ner_transform_dataset",
     default_args=common.default_args,
-    schedule_interval=None,
+    schedule=None,
     render_template_as_native_obj=True,
     params={
         "fs_conn_id": Param(type="string", default="fs_data"),

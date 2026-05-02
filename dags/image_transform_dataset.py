@@ -70,7 +70,7 @@ def copy_item_to_file(item, context):
 with DAG(
     "image_transform_dataset",
     default_args=common.default_args,
-    schedule_interval=None,
+    schedule=None,
     render_template_as_native_obj=True,
     params={
         "fs_conn_id": Param(type="string", default="fs_data"),

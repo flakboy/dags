@@ -30,7 +30,7 @@ def load_file(ti):
     print("File loaded: " + os.path.join(hook.get_path(), FILE_NAME))
 
 
-with DAG("file_sensor_test", default_args=default_args, schedule_interval=None) as dag:
+with DAG("file_sensor_test", default_args=default_args, schedule=None) as dag:
 
     wait_for_file = FileSensor(
         task_id="wait_for_file",

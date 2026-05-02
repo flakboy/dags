@@ -33,7 +33,7 @@ def translate(text: str, language: str):
 
 
 with DAG(
-    "language_detection", default_args=default_args, schedule_interval=None
+    "language_detection", default_args=default_args, schedule=None
 ) as dag:
     detect_language_task = PythonOperator(
         task_id="detect_language",

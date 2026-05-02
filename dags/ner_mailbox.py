@@ -26,7 +26,7 @@ def parse_paths(paths, **context):
 with DAG(
     "ner_mailbox",
     default_args=common.default_args,
-    schedule_interval=None,
+    schedule=None,
     render_template_as_native_obj=True,
     params={
         "fs_conn_id": Param(type="string", default="fs_data"),

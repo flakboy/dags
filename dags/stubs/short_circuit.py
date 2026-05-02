@@ -21,7 +21,7 @@ def eval_my():
 with DAG(
     "playground",
     default_args=default_args,
-    schedule_interval=None,
+    schedule=None,
 ) as dag:
     dummy_start = DummyOperator(task_id="dummy_start")
     sco = ShortCircuitOperator(

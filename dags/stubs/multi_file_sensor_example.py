@@ -33,7 +33,7 @@ def load_file(ti):
 
 
 with DAG(
-    "multi_file_sensor_test", default_args=default_args, schedule_interval=None
+    "multi_file_sensor_test", default_args=default_args, schedule=None
 ) as dag:
 
     wait_for_files = MultipleFilesSensor(
