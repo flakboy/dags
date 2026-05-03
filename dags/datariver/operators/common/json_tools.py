@@ -8,8 +8,6 @@ import requests
 from urllib.request import urlopen
 import validators
 import numpy as np
-from PIL import Image
-from io import BytesIO
 from airflow.models.baseoperator import BaseOperator
 from airflow.hooks.filesystem import FSHook
 from airflow.utils.log.logging_mixin import LoggingMixin
@@ -155,20 +153,6 @@ class JsonArgs(LoggingMixin):
         except IOError as e:
             self.log.error(f"Couldn't open {self.get_full_path()} ({str(e)})!")
 
-    def get_PIL_image(self, key):
-        image_path = self.get_value(key)
-        if validators.url(image_path):
-            result = requests.get(image_path)
-            if result.status_code != 200:
-                return None
-            image_content = BytesIO(result.content)
-        else:
-            image_content = self.generate_absolute_path(
-                self.get_full_path(), image_path
-            )
-        print(image_path)
-        image = Image.open(image_content)
-        return image
 
 
     @staticmethod
