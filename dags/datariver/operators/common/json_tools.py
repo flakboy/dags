@@ -7,7 +7,6 @@ import datetime
 import requests
 from urllib.request import urlopen
 import validators
-import cv2
 import numpy as np
 from PIL import Image
 from io import BytesIO
@@ -171,25 +170,6 @@ class JsonArgs(LoggingMixin):
         image = Image.open(image_content)
         return image
 
-    def get_cv2_image(self, key):
-        image_path = self.get_value(key)
-        if validators.url(image_path):
-            try:
-                result = urlopen(image_path)
-            except Exception:
-                return None
-            if result.code != 200:
-                return None
-            arr = np.asarray(bytearray(result.read()), dtype=np.uint8)
-            image = cv2.imdecode(arr, -1)
-        else:
-            image_content = self.generate_absolute_path(
-                self.get_full_path(), image_path
-            )
-            image = cv2.imread(image_content)
-        if len(image.shape) == 3:
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        return image
 
     @staticmethod
     def generate_absolute_path(base_path: str, path: str) -> str:
