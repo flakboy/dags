@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import List
+
 import json
 import ijson
 import os
@@ -88,10 +90,11 @@ def dynamic_s3_json_processing():
     def process_single_file(file_name: str):
         import time
         logger = logging.getLogger(__name__)
+        s3 = S3Hook(aws_conn_id=AWS_CONN_ID)
+
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             local_input_path = os.path.join(tmp_dir)
-            s3 = S3Hook(aws_conn_id=AWS_CONN_ID)
             downloaded_file_path = s3.download_file(
                 key=file_name,
                 bucket_name=OUTPUT_BUCKET,
@@ -101,12 +104,21 @@ def dynamic_s3_json_processing():
 
             with open(downloaded_file_path, "r") as f:
                 # read contents of file into memory in order to be able to observe the data from outside of the process
-                data = downloaded_file_path.read()
+                data = f.read()
                 # simulate data processing...
                 time.sleep(40)
                 # printing the data just in case Python interpeter would optimize the variable away
                 logger.info(f"Read content of file {file_name}: {data}")
 
+
+    @task
+    def cleanup(keys: List[str]):
+        s3 = S3Hook(aws_conn_id=AWS_CONN_ID)
+
+        s3.delete_objects(
+            bucket_name=OUTPUT_BUCKET,
+            keys=keys
+        )
 
     split_result = split_input_file()
 
