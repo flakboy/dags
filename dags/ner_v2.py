@@ -82,9 +82,7 @@ def dynamic_s3_json_processing():
                         output_keys.append(output_key)
                         logger.info(f"Key {output_key} loaded sucessfully")
 
-                        tmp_file.delete()
-
-            return output_keys
+        return output_keys
 
     # @task
     # def process_single_file(file_name: str):
