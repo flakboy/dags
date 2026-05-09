@@ -116,7 +116,7 @@ def dynamic_s3_json_processing():
         s3 = S3Hook(aws_conn_id=AWS_CONN_ID)
 
         s3.delete_objects(
-            bucket_name=OUTPUT_BUCKET,
+            bucket=OUTPUT_BUCKET,
             keys=keys
         )
 
