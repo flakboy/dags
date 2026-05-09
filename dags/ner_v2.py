@@ -53,7 +53,7 @@ def dynamic_s3_json_processing():
             input_path = os.path.join(tmp_dir, filename)
             output_keys = []
 
-            timestamp = datetime.now(datetime.timezone.utc).isoformat().split(".")[0]
+            timestamp = datetime.now(UTC).isoformat().split(".")[0]
 
             with open(input_path, "rb") as f:
                 for index, record in enumerate(ijson.items(f, "item")):
