@@ -32,13 +32,13 @@ def dynamic_s3_json_processing():
     def splitFile(input_path: str) -> list[str]:
         logger = logging.getLogger(__name__)
 
-        hook = FSHook()
-        basepath = hook.get_path()
+        # hook = FSHook()
+        # basepath = hook.get_path()
 
-        full_path = os.path.join(basepath, input_path)
+        # full_path = os.path.join(basepath, input_path)
 
         mapped = []
-        with open(full_path, "rb") as f:
+        with open(input_path, "rb") as f:
             for record in ijson.items(f, "item"):
                 logger.info(record)
                 # mapped.append(self.python_callable(record, context))
