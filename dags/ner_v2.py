@@ -5,6 +5,7 @@ import ijson
 import os
 import tempfile
 import logging
+import datetime
 
 from datetime import datetime
 from pathlib import Path
@@ -29,26 +30,8 @@ OUTPUT_BUCKET = "airflow-output"
     },
 )
 def dynamic_s3_json_processing():
-    def splitFile(input_path: str) -> list[str]:
-        logger = logging.getLogger(__name__)
-
-        # hook = FSHook()
-        # basepath = hook.get_path()
-
-        # full_path = os.path.join(basepath, input_path)
-
-        mapped = []
-        with open(input_path, "rb") as f:
-            for record in ijson.items(f, "item"):
-                logger.info(record)
-                # mapped.append(self.python_callable(record, context))
-
-        return mapped
-
-
     @task
     def split_input_file(**context) -> list[str]:
-        import datetime
 
         logger = logging.getLogger(__name__)
 
@@ -80,7 +63,7 @@ def dynamic_s3_json_processing():
                         dir=tmp_dir,
                         delete_on_close=False
                     ) as tmp_file:
-                        tmp_file.write(record)
+                        tmp_file.write(json.dumps(record).encode("utf-8"))
                         tmp_file.close()
 
                         output_key = f"dr_process_files/{timestamp}/{Path(tmp_file).name}-{index}"
@@ -97,26 +80,6 @@ def dynamic_s3_json_processing():
 
                         tmp_file.delete()
 
-
-            # split_files = splitFile(os.path.join(local_input_path, filename))
-
-            # uploaded_file_keys = []
-            # for local_file in split_files:
-
-            #     output_key = Path(local_file).name
-
-            #     # s3.load_file(
-            #     #     filename=local_file,
-            #     #     key=output_key,
-            #     #     bucket_name=OUTPUT_BUCKET,
-            #     #     replace=True,
-            #     # )
-
-            #     # uploaded_file_keys.append(output_key)
-
-            #     print(f"Wysłano plik: {output_key}")
-
-            # Lista nazw plików trafia do XCom
             return output_keys
 
     # @task
