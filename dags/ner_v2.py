@@ -66,7 +66,7 @@ def dynamic_s3_json_processing():
                         tmp_file.write(json.dumps(record).encode("utf-8"))
                         tmp_file.close()
 
-                        output_key = f"dr_process_files/{timestamp}/{Path(tmp_file).name}-{index}"
+                        output_key = f"dr_process_files/{timestamp}/{Path(tmp_file.file).name}-{index}"
 
                         s3.load_file(
                             filename=Path(tmp_file).absolute,
