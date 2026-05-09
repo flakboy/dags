@@ -94,7 +94,7 @@ def dynamic_s3_json_processing():
             s3 = S3Hook(aws_conn_id=AWS_CONN_ID)
             downloaded_file_path = s3.download_file(
                 key=file_name,
-                bucket_name=INPUT_BUCKET,
+                bucket_name=OUTPUT_BUCKET,
                 local_path=local_input_path,
                 preserve_file_name=True
             )
