@@ -25,7 +25,7 @@ OUTPUT_BUCKET = "airflow-output"
     schedule=None,
     catchup=False,
     params={
-        "input_file_name": "example.json"
+        "input_file_name": "texts_small.json"
     },
 )
 def dynamic_s3_json_processing():
@@ -52,18 +52,18 @@ def dynamic_s3_json_processing():
         s3 = S3Hook(aws_conn_id=AWS_CONN_ID)
 
         with tempfile.TemporaryDirectory() as tmp_dir:
-            local_input_path = os.path.join(tmp_dir, input_file_name)
-            print(f"Saving file to ${local_input_path}")
-            s3.download_file(
+            local_input_path = os.path.join(tmp_dir)
+            print(f"Saving file to directory ${local_input_path}")
+            filename = s3.download_file(
                 key=input_file_name,
                 bucket_name=INPUT_BUCKET,
                 local_path=local_input_path,
+                preserve_file_name=True
             )
 
-            print(f"Downloaded file: {input_file_name}")
+            print(f"Downloaded file: {filename}")
 
-
-            split_files = splitFile(local_input_path)
+            split_files = splitFile(os.path.join(local_input_path, filename))
 
             uploaded_file_keys = []
             for local_file in split_files:
