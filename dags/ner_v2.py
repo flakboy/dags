@@ -53,7 +53,7 @@ def dynamic_s3_json_processing():
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             local_input_path = os.path.join(tmp_dir, input_file_name)
-
+            print(f"Saving file to ${local_input_path}")
             s3.download_file(
                 key=input_file_name,
                 bucket_name=INPUT_BUCKET,
