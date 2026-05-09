@@ -71,15 +71,16 @@ def dynamic_s3_json_processing():
 
                         output_key = f"dr_process_files/{timestamp}/{file_name}-{index}-{file_ext}"
 
+
+                        logger.info(f"Sending {tmp_file.name} as {output_key}")
                         s3.load_file(
-                            filename=Path(tmp_file).absolute,
+                            filename=tmp_file.name,
                             key=output_key,
                             bucket_name=OUTPUT_BUCKET,
                             replace=True,
                         )
-
-                        print(f"Wysłano plik: {output_key}")
                         output_keys.append(output_key)
+                        logger.info(f"Key {output_key} loaded sucessfully")
 
                         tmp_file.delete()
 
