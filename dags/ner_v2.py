@@ -122,10 +122,11 @@ def dynamic_s3_json_processing():
 
     split_result = split_input_file()
 
-    process_single_file.expand(
+    processed = process_single_file.expand(
         file_name=split_result
     )
 
+    processed >> cleanup(split_result)
 
 
 dag_instance = dynamic_s3_json_processing()
