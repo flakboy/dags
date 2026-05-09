@@ -7,7 +7,7 @@ import tempfile
 import logging
 import datetime
 
-from datetime import datetime
+from datetime import datetime, UTC
 from pathlib import Path
 
 from airflow.sdk import dag, task
