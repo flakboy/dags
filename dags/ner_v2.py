@@ -48,12 +48,16 @@ def dynamic_s3_json_processing():
 
     @task
     def split_input_file(**context) -> list[str]:
+        import datetime
+
+        logger = logging.getLogger(__name__)
+
         input_file_name = context["params"]["input_file_name"]
         s3 = S3Hook(aws_conn_id=AWS_CONN_ID)
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             local_input_path = os.path.join(tmp_dir)
-            print(f"Saving file to directory ${local_input_path}")
+            print(f"Saving file to directory {local_input_path}")
             filename = s3.download_file(
                 key=input_file_name,
                 bucket_name=INPUT_BUCKET,
@@ -63,26 +67,57 @@ def dynamic_s3_json_processing():
 
             print(f"Downloaded file: {filename}")
 
-            split_files = splitFile(os.path.join(local_input_path, filename))
+            input_path = os.path.join(tmp_dir, filename)
+            output_keys = []
 
-            uploaded_file_keys = []
-            for local_file in split_files:
+            timestamp = datetime.datetime.now(datetime.timezone.utc).isoformat().split(".")[0]
 
-                output_key = Path(local_file).name
+            with open(input_path, "rb") as f:
+                for index, record in enumerate(ijson.items(f, "item")):
+                    logger.info(record)
 
-                # s3.load_file(
-                #     filename=local_file,
-                #     key=output_key,
-                #     bucket_name=OUTPUT_BUCKET,
-                #     replace=True,
-                # )
+                    with tempfile.NamedTemporaryFile(
+                        dir=tmp_dir,
+                        delete_on_close=False
+                    ) as tmp_file:
+                        tmp_file.write(record)
+                        tmp_file.close()
 
-                # uploaded_file_keys.append(output_key)
+                        output_key = f"dr_process_files/{timestamp}/{Path(tmp_file).name}-{index}"
 
-                print(f"Wysłano plik: {output_key}")
+                        s3.load_file(
+                            filename=Path(tmp_file).absolute,
+                            key=output_key,
+                            bucket_name=OUTPUT_BUCKET,
+                            replace=True,
+                        )
+
+                        print(f"Wysłano plik: {output_key}")
+                        output_keys.append(output_key)
+
+                        tmp_file.delete()
+
+
+            # split_files = splitFile(os.path.join(local_input_path, filename))
+
+            # uploaded_file_keys = []
+            # for local_file in split_files:
+
+            #     output_key = Path(local_file).name
+
+            #     # s3.load_file(
+            #     #     filename=local_file,
+            #     #     key=output_key,
+            #     #     bucket_name=OUTPUT_BUCKET,
+            #     #     replace=True,
+            #     # )
+
+            #     # uploaded_file_keys.append(output_key)
+
+            #     print(f"Wysłano plik: {output_key}")
 
             # Lista nazw plików trafia do XCom
-            return uploaded_file_keys
+            return output_keys
 
     # @task
     # def process_single_file(file_name: str):
