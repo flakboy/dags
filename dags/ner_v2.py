@@ -14,9 +14,9 @@ from airflow.providers.standard.hooks.filesystem import FSHook
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
 
-AWS_CONN_ID = "s3_conn"
-INPUT_BUCKET = "input-files"
-OUTPUT_BUCKET = "output-files"
+AWS_CONN_ID = "dr-s3"
+INPUT_BUCKET = "airflow-input"
+OUTPUT_BUCKET = "airflow-output"
 
 
 @dag(
