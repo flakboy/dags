@@ -41,21 +41,24 @@ def dynamic_s3_json_processing():
         with tempfile.TemporaryDirectory() as tmp_dir:
             local_input_path = os.path.join(tmp_dir)
             print(f"Saving file to directory {local_input_path}")
-            filename = s3.download_file(
+            downloaded_file_path = s3.download_file(
                 key=input_file_name,
                 bucket_name=INPUT_BUCKET,
                 local_path=local_input_path,
                 preserve_file_name=True
             )
 
-            print(f"Downloaded file: {filename}")
+            print(f"Downloaded file: {downloaded_file_path}")
 
-            input_path = os.path.join(tmp_dir, filename)
+            input_path = os.path.join(tmp_dir, downloaded_file_path)
+            file_name = Path("/path/to/file.txt").stem
+            file_ext = "".join(Path("/path/to/file.txt").suffixes)
             output_keys = []
 
             timestamp = datetime.now(UTC).isoformat().split(".")[0]
 
             with open(input_path, "rb") as f:
+                f.name
                 for index, record in enumerate(ijson.items(f, "item")):
                     logger.info(record)
 
@@ -66,7 +69,7 @@ def dynamic_s3_json_processing():
                         tmp_file.write(json.dumps(record).encode("utf-8"))
                         tmp_file.close()
 
-                        output_key = f"dr_process_files/{timestamp}/{Path(tmp_file.file).name}-{index}"
+                        output_key = f"dr_process_files/{timestamp}/{file_name}-{index}-{file_ext}"
 
                         s3.load_file(
                             filename=Path(tmp_file).absolute,
