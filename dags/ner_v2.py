@@ -51,7 +51,7 @@ def dynamic_s3_json_processing():
             print(f"Downloaded file: {downloaded_file_path}")
 
             input_path = os.path.join(tmp_dir, downloaded_file_path)
-            file_name = Path("/path/to/file.txt").stem
+            file_name = Path(input_path).stem
             file_ext = "".join(Path("/path/to/file.txt").suffixes)
             output_keys = []
 
@@ -69,7 +69,7 @@ def dynamic_s3_json_processing():
                         tmp_file.write(json.dumps(record).encode("utf-8"))
                         tmp_file.close()
 
-                        output_key = f"dr_process_files/{timestamp}/{file_name}-{index}-{file_ext}"
+                        output_key = f"dr_process_files/{timestamp}/intermediate/{file_name}-{index}{file_ext}"
 
 
                         logger.info(f"Sending {tmp_file.name} as {output_key}")
@@ -84,29 +84,35 @@ def dynamic_s3_json_processing():
 
         return output_keys
 
-    # @task
-    # def process_single_file(file_name: str):
-    #     def processFile(file_name: str):
-    #         """
-    #         Właściwe przetwarzanie pliku.
-    #         """
+    @task
+    def process_single_file(file_name: str):
+        import time
+        logger = logging.getLogger(__name__)
 
-    #         print(f"Przetwarzam plik: {file_name}")
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            local_input_path = os.path.join(tmp_dir)
+            s3 = S3Hook(aws_conn_id=AWS_CONN_ID)
+            downloaded_file_path = s3.download_file(
+                key=file_name,
+                bucket_name=INPUT_BUCKET,
+                local_path=local_input_path,
+                preserve_file_name=True
+            )
 
-
-    #     print(f"Start przetwarzania: {file_name}")
-
-    #     # Worker zna konkretną nazwę pliku
-    #     processFile(file_name)
-
-    #     print(f"Koniec przetwarzania: {file_name}")
+            with open(downloaded_file_path, "r") as f:
+                # read contents of file into memory in order to be able to observe the data from outside of the process
+                data = downloaded_file_path.read()
+                # simulate data processing...
+                time.sleep(40)
+                # printing the data just in case Python interpeter would optimize the variable away
+                logger.info(f"Read content of file {file_name}: {data}")
 
 
     split_result = split_input_file()
 
-    # process_single_file.expand(
-    #     file_name=split_result
-    # )
+    process_single_file.expand(
+        file_name=split_result
+    )
 
 
 
