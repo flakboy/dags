@@ -60,7 +60,6 @@ def dynamic_s3_json_processing():
             timestamp = datetime.now(UTC).isoformat().split(".")[0]
 
             with open(input_path, "rb") as f:
-                f.name
                 for index, record in enumerate(ijson.items(f, "item")):
                     logger.info(record)
 
@@ -106,7 +105,7 @@ def dynamic_s3_json_processing():
                 # read contents of file into memory in order to be able to observe the data from outside of the process
                 data = f.read()
                 # simulate data processing...
-                time.sleep(40)
+                time.sleep(180)
                 # printing the data just in case Python interpeter would optimize the variable away
                 logger.info(f"Read content of file {file_name}: {data}")
 
